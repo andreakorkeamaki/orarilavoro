@@ -23,6 +23,8 @@ body {
   background:
     linear-gradient(135deg, rgba(215, 25, 32, 0.12), transparent 36%),
     linear-gradient(180deg, #ffffff 0%, #f1f1f3 100%);
+  -webkit-tap-highlight-color: rgba(215, 25, 32, 0.18);
+  overscroll-behavior-y: none;
 }
 
 button,
@@ -38,7 +40,7 @@ button {
 .app-shell {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 28px 0 42px;
+  padding: max(28px, env(safe-area-inset-top)) 0 max(42px, env(safe-area-inset-bottom));
 }
 
 .hero {

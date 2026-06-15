@@ -371,3 +371,11 @@ elements.shiftNote.addEventListener("input", () => {
 elements.manualDate.value = toDateInputValue(new Date());
 render();
 setInterval(renderActiveShift, 1000);
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {
+      // The app still works without offline support, for example from file://.
+    });
+  });
+}
