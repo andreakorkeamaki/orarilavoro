@@ -17,7 +17,18 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="hero">
+      <header class="app-topbar">
+        <a class="brand-lockup" href="#turno" aria-label="Ore di Lessa">
+          <span class="brand-mark">OL</span>
+          <span>
+            <strong>Ore di Lessa</strong>
+            <small id="todayLabel">Oggi</small>
+          </span>
+        </a>
+        <div class="status-pill compact-status" id="topWorkStatus">Fuori servizio</div>
+      </header>
+
+      <section class="hero" id="turno">
         <div>
           <p class="eyebrow">Registro turni</p>
           <h1>Ore di Lessa</h1>
@@ -49,7 +60,7 @@
           <p class="hint" id="activeHint">La timbrata resta salvata anche se chiudi la pagina.</p>
         </article>
 
-        <article class="panel totals-panel">
+        <article class="panel totals-panel" id="report">
           <div class="month-controls">
             <button class="icon-button" id="previousMonth" type="button" aria-label="Mese precedente">&lt;</button>
             <div>
@@ -83,7 +94,7 @@
       </section>
 
       <section class="content-grid">
-        <article class="panel">
+        <article class="panel" id="storico">
           <div class="panel-header compact">
             <div>
               <p class="label">Turni registrati</p>
@@ -94,7 +105,7 @@
         </article>
 
         <aside class="side-stack">
-          <article class="panel">
+          <article class="panel" id="impostazioni">
             <p class="label">Impostazioni</p>
             <h2>Paga e profilo</h2>
             <form id="settingsForm" class="form-stack">
@@ -117,6 +128,17 @@
               </label>
               <button class="primary-button full-width" type="submit">Salva impostazioni</button>
             </form>
+          </article>
+
+          <article class="panel">
+            <p class="label">Dati</p>
+            <h2>Archivio</h2>
+            <div class="form-stack">
+              <button class="secondary-button full-width" id="exportBackup" type="button">Backup dati</button>
+              <button class="secondary-button full-width" id="importBackup" type="button">Ripristina dati</button>
+              <input id="backupFile" type="file" accept="application/json,.json" hidden>
+              <p class="hint" id="storageHint">Archivio locale pronto.</p>
+            </div>
           </article>
 
           <article class="panel">
@@ -146,6 +168,13 @@
           </article>
         </aside>
       </section>
+
+      <nav class="bottom-nav" aria-label="Navigazione app">
+        <a href="#turno">Turno</a>
+        <a href="#report">Report</a>
+        <a href="#storico">Storico</a>
+        <a href="#impostazioni">Paga</a>
+      </nav>
     </main>
 
     <template id="shiftTemplate">

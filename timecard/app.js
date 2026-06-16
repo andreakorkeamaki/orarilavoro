@@ -12,6 +12,8 @@ const defaultState = {
 
 const elements = {
   workStatus: document.querySelector("#workStatus"),
+  topWorkStatus: document.querySelector("#topWorkStatus"),
+  todayLabel: document.querySelector("#todayLabel"),
   activeTitle: document.querySelector("#activeTitle"),
   liveClock: document.querySelector("#liveClock"),
   shiftNote: document.querySelector("#shiftNote"),
@@ -36,11 +38,16 @@ const elements = {
   manualStart: document.querySelector("#manualStart"),
   manualEnd: document.querySelector("#manualEnd"),
   manualNote: document.querySelector("#manualNote"),
+  exportBackup: document.querySelector("#exportBackup"),
+  importBackup: document.querySelector("#importBackup"),
+  backupFile: document.querySelector("#backupFile"),
+  storageHint: document.querySelector("#storageHint"),
   shiftTemplate: document.querySelector("#shiftTemplate"),
 };
 
 let state = loadState();
 let selectedMonth = startOfMonth(new Date());
+let storagePersistRequested = false;
 
 function loadState() {
   try {
@@ -62,6 +69,14 @@ function loadState() {
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function createId() {
+  if (globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  return `shift-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
 function pad(value) {
@@ -149,7 +164,9 @@ function renderActiveShift() {
 
   if (!active) {
     elements.workStatus.textContent = "Fuori servizio";
+    elements.topWorkStatus.textContent = "Fuori servizio";
     elements.workStatus.classList.remove("active");
+    elements.topWorkStatus.classList.remove("active");
     elements.activeTitle.textContent = "Pronta a iniziare";
     elements.liveClock.textContent = "00:00:00";
     elements.clockInButton.disabled = false;
@@ -161,7 +178,9 @@ function renderActiveShift() {
   const startedAt = new Date(active.start);
   const elapsed = Date.now() - startedAt.getTime();
   elements.workStatus.textContent = "Al lavoro";
+  elements.topWorkStatus.textContent = "Al lavoro";
   elements.workStatus.classList.add("active");
+  elements.topWorkStatus.classList.add("active");
   elements.activeTitle.textContent = `Iniziato alle ${formatTime(startedAt)}`;
   elements.liveClock.textContent = formatTimer(elapsed);
   elements.clockInButton.disabled = true;
@@ -219,19 +238,22 @@ function renderShiftList(shifts) {
 }
 
 function render() {
+  elements.todayLabel.textContent = formatDate(new Date());
   renderActiveShift();
   renderSettings();
   renderMonth();
+  updateStorageHint();
 }
 
 function clockIn() {
   const now = new Date();
   state.activeShift = {
-    id: crypto.randomUUID(),
+    id: createId(),
     start: now.toISOString(),
     note: elements.shiftNote.value.trim(),
   };
   saveState();
+  requestPersistentStorage();
   render();
 }
 
@@ -257,6 +279,7 @@ function clockOut() {
   elements.shiftNote.value = "";
   selectedMonth = startOfMonth(new Date(shift.start));
   saveState();
+  requestPersistentStorage();
   render();
 }
 
@@ -270,7 +293,7 @@ function addManualShift(event) {
   }
 
   state.shifts.push({
-    id: crypto.randomUUID(),
+    id: createId(),
     start: start.toISOString(),
     end: end.toISOString(),
     note: elements.manualNote.value.trim(),
@@ -280,6 +303,7 @@ function addManualShift(event) {
   event.target.reset();
   elements.manualDate.value = toDateInputValue(new Date());
   saveState();
+  requestPersistentStorage();
   render();
 }
 
@@ -296,6 +320,7 @@ function deleteShift(id) {
 
   state.shifts = state.shifts.filter((item) => item.id !== id);
   saveState();
+  requestPersistentStorage();
   render();
 }
 
@@ -307,6 +332,7 @@ function saveSettings(event) {
     currency: elements.currency.value,
   };
   saveState();
+  requestPersistentStorage();
   render();
 }
 
@@ -353,11 +379,106 @@ function exportCsv() {
   URL.revokeObjectURL(url);
 }
 
+function exportBackup() {
+  const backup = {
+    app: "ore-di-lessa",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    data: state,
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `ore-lessa-backup-${toDateInputValue(new Date())}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function importBackupFile(file) {
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    try {
+      const parsed = JSON.parse(String(reader.result || "{}"));
+      const importedState = parsed.data || parsed;
+      if (!Array.isArray(importedState.shifts)) {
+        throw new Error("Invalid backup");
+      }
+
+      if (!confirm("Ripristinare questo backup e sostituire i dati attuali?")) {
+        return;
+      }
+
+      state = {
+        ...defaultState,
+        ...importedState,
+        settings: {
+          ...defaultState.settings,
+          ...(importedState.settings || {}),
+        },
+        activeShift: importedState.activeShift || null,
+        shifts: importedState.shifts,
+      };
+      selectedMonth = startOfMonth(new Date());
+      saveState();
+      requestPersistentStorage();
+      render();
+    } catch {
+      alert("Backup non valido.");
+    } finally {
+      elements.backupFile.value = "";
+    }
+  });
+  reader.readAsText(file);
+}
+
+async function requestPersistentStorage() {
+  if (storagePersistRequested || !navigator.storage?.persist) {
+    return;
+  }
+
+  storagePersistRequested = true;
+  try {
+    await navigator.storage.persist();
+    updateStorageHint();
+  } catch {
+    updateStorageHint();
+  }
+}
+
+async function updateStorageHint() {
+  if (!elements.storageHint) {
+    return;
+  }
+
+  if (!navigator.storage?.persisted) {
+    elements.storageHint.textContent = "Dati salvati su questo dispositivo.";
+    return;
+  }
+
+  try {
+    const persisted = await navigator.storage.persisted();
+    elements.storageHint.textContent = persisted
+      ? "Archivio protetto su questo dispositivo."
+      : "Dati salvati su questo dispositivo.";
+  } catch {
+    elements.storageHint.textContent = "Dati salvati su questo dispositivo.";
+  }
+}
+
 elements.clockInButton.addEventListener("click", clockIn);
 elements.clockOutButton.addEventListener("click", clockOut);
 elements.previousMonth.addEventListener("click", () => changeMonth(-1));
 elements.nextMonth.addEventListener("click", () => changeMonth(1));
 elements.exportCsv.addEventListener("click", exportCsv);
+elements.exportBackup.addEventListener("click", exportBackup);
+elements.importBackup.addEventListener("click", () => elements.backupFile.click());
+elements.backupFile.addEventListener("change", () => {
+  const [file] = elements.backupFile.files;
+  if (file) {
+    importBackupFile(file);
+  }
+});
 elements.settingsForm.addEventListener("submit", saveSettings);
 elements.manualForm.addEventListener("submit", addManualShift);
 elements.shiftNote.addEventListener("input", () => {
@@ -366,6 +487,7 @@ elements.shiftNote.addEventListener("input", () => {
   }
   state.activeShift.note = elements.shiftNote.value.trim();
   saveState();
+  requestPersistentStorage();
 });
 
 elements.manualDate.value = toDateInputValue(new Date());
@@ -374,8 +496,13 @@ setInterval(renderActiveShift, 1000);
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => {
-      // The app still works without offline support, for example from file://.
-    });
+    navigator.serviceWorker
+      .register("./sw.js")
+      .then((registration) => {
+        registration.update();
+      })
+      .catch(() => {
+        // The app still works without offline support, for example from file://.
+      });
   });
 }
