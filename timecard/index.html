@@ -17,169 +17,150 @@
   </head>
   <body>
     <main class="app-shell">
-      <header class="app-topbar">
-        <a class="brand-lockup" href="#home" data-view-link="home" aria-label="CONTA PALLE">
-          <span class="brand-mark">CP</span>
-          <span>
-            <strong>CONTA PALLE</strong>
-            <small id="todayLabel">Oggi</small>
-          </span>
-        </a>
-        <a class="topbar-action" href="#settings" data-view-link="settings">Impostazioni</a>
-      </header>
-
       <section class="view home-view active" id="home" data-view="home">
-        <section class="hero punch-hero">
-          <div>
-            <p class="eyebrow">Turno</p>
+        <div class="home-card">
+          <div class="home-brand">
+            <span class="brand-mark">CP</span>
             <h1>CONTA PALLE</h1>
+            <div class="status-pill" id="workStatus">Fuori servizio</div>
           </div>
-          <div class="status-pill" id="workStatus">Fuori servizio</div>
-        </section>
 
-        <article class="panel punch-panel">
-          <div class="punch-status">
-            <p class="label">Adesso</p>
-            <h2 id="activeTitle">Pronta a iniziare</h2>
+          <div class="punch-state">
+            <p id="activeTitle">Pronta a iniziare</p>
             <span class="live-clock" id="liveClock">00:00:00</span>
           </div>
 
-          <div class="button-row punch-actions">
+          <div class="punch-actions">
             <button class="primary-button punch-button" id="clockInButton" type="button">INIZIO LAVORO</button>
             <button class="secondary-button punch-button" id="clockOutButton" type="button" disabled>FINE LAVORO</button>
           </div>
 
-          <label class="field quiet-field">
-            <span>Nota turno</span>
-            <input id="shiftNote" type="text" placeholder="Sala, cucina, extra, evento...">
-          </label>
+          <input id="shiftNote" type="hidden" value="">
+          <p class="hint" id="activeHint">La timbrata resta salvata sul telefono.</p>
+        </div>
+      </section>
 
-          <p class="hint" id="activeHint">La timbrata resta salvata anche se chiudi la pagina.</p>
+      <section class="view report-view" id="report" data-view="report">
+        <header class="screen-header">
+          <p class="label">Report</p>
+          <h1>Dettaglio mese</h1>
+        </header>
+
+        <article class="panel totals-panel">
+          <div class="month-controls">
+            <button class="icon-button" id="previousMonth" type="button" aria-label="Mese precedente">&lt;</button>
+            <div>
+              <p class="label">Mese</p>
+              <h2 id="monthLabel">-</h2>
+            </div>
+            <button class="icon-button" id="nextMonth" type="button" aria-label="Mese successivo">&gt;</button>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <span>Ore</span>
+              <strong id="monthHours">0h 00m</strong>
+            </div>
+            <div class="stat">
+              <span>Stipendio</span>
+              <strong id="monthPay">EUR 0,00</strong>
+            </div>
+            <div class="stat">
+              <span>Turni</span>
+              <strong id="monthShifts">0</strong>
+            </div>
+            <div class="stat">
+              <span>Media turno</span>
+              <strong id="averageShift">0h 00m</strong>
+            </div>
+          </div>
+
+          <button class="secondary-button full-width" id="exportCsv" type="button">Esporta CSV del mese</button>
+        </article>
+
+        <article class="panel shift-panel">
+          <div class="panel-header">
+            <div>
+              <p class="label">Storico</p>
+              <h2>Turni registrati</h2>
+            </div>
+          </div>
+          <div class="shift-list" id="shiftList"></div>
         </article>
       </section>
 
       <section class="view settings-view" id="settings" data-view="settings">
-        <section class="settings-heading">
-          <div>
-            <p class="eyebrow">Gestione</p>
-            <h1>IMPOSTAZIONI</h1>
+        <header class="screen-header">
+          <p class="label">App</p>
+          <h1>Impostazioni</h1>
+        </header>
+
+        <article class="panel">
+          <p class="label">Paga</p>
+          <h2>Paga e profilo</h2>
+          <form id="settingsForm" class="form-stack">
+            <label class="field">
+              <span>Nome</span>
+              <input id="workerName" type="text" autocomplete="name" placeholder="Lessa">
+            </label>
+            <label class="field">
+              <span>Paga oraria</span>
+              <input id="hourlyRate" type="number" min="0" step="0.01" inputmode="decimal">
+            </label>
+            <label class="field">
+              <span>Valuta</span>
+              <select id="currency">
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+                <option value="GBP">GBP</option>
+                <option value="CHF">CHF</option>
+              </select>
+            </label>
+            <button class="primary-button full-width" type="submit">Salva impostazioni</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <p class="label">Correzione</p>
+          <h2>Aggiungi turno</h2>
+          <form id="manualForm" class="form-stack">
+            <label class="field">
+              <span>Data</span>
+              <input id="manualDate" type="date" required>
+            </label>
+            <div class="two-columns">
+              <label class="field">
+                <span>Inizio</span>
+                <input id="manualStart" type="time" required>
+              </label>
+              <label class="field">
+                <span>Fine</span>
+                <input id="manualEnd" type="time" required>
+              </label>
+            </div>
+            <label class="field">
+              <span>Nota</span>
+              <input id="manualNote" type="text" placeholder="Motivo o mansione">
+            </label>
+            <button class="secondary-button full-width" type="submit">Aggiungi turno</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <p class="label">Dati</p>
+          <h2>Archivio</h2>
+          <div class="form-stack">
+            <button class="secondary-button full-width" id="exportBackup" type="button">Backup dati</button>
+            <button class="secondary-button full-width" id="importBackup" type="button">Ripristina dati</button>
+            <input id="backupFile" type="file" accept="application/json,.json" hidden>
+            <p class="hint" id="storageHint">Archivio locale pronto.</p>
           </div>
-          <div class="status-pill compact-status" id="topWorkStatus">Fuori servizio</div>
-        </section>
-
-        <section class="dashboard-grid">
-          <article class="panel totals-panel" id="report">
-            <div class="month-controls">
-              <button class="icon-button" id="previousMonth" type="button" aria-label="Mese precedente">&lt;</button>
-              <div>
-                <p class="label">Report mese</p>
-                <h2 id="monthLabel">-</h2>
-              </div>
-              <button class="icon-button" id="nextMonth" type="button" aria-label="Mese successivo">&gt;</button>
-            </div>
-
-            <div class="stat-grid">
-              <div class="stat">
-                <span>Ore</span>
-                <strong id="monthHours">0h 00m</strong>
-              </div>
-              <div class="stat">
-                <span>Stipendio</span>
-                <strong id="monthPay">EUR 0,00</strong>
-              </div>
-              <div class="stat">
-                <span>Turni</span>
-                <strong id="monthShifts">0</strong>
-              </div>
-              <div class="stat">
-                <span>Media turno</span>
-                <strong id="averageShift">0h 00m</strong>
-              </div>
-            </div>
-
-            <button class="secondary-button full-width" id="exportCsv" type="button">Esporta CSV del mese</button>
-          </article>
-
-          <article class="panel" id="impostazioni">
-            <p class="label">Impostazioni</p>
-            <h2>Paga e profilo</h2>
-            <form id="settingsForm" class="form-stack">
-              <label class="field">
-                <span>Nome</span>
-                <input id="workerName" type="text" autocomplete="name" placeholder="Lessa">
-              </label>
-              <label class="field">
-                <span>Paga oraria</span>
-                <input id="hourlyRate" type="number" min="0" step="0.01" inputmode="decimal">
-              </label>
-              <label class="field">
-                <span>Valuta</span>
-                <select id="currency">
-                  <option value="EUR">EUR</option>
-                  <option value="USD">USD</option>
-                  <option value="GBP">GBP</option>
-                  <option value="CHF">CHF</option>
-                </select>
-              </label>
-              <button class="primary-button full-width" type="submit">Salva impostazioni</button>
-            </form>
-          </article>
-        </section>
-
-        <section class="content-grid">
-          <article class="panel" id="storico">
-            <div class="panel-header compact">
-              <div>
-                <p class="label">Turni registrati</p>
-                <h2>Dettaglio mese</h2>
-              </div>
-            </div>
-            <div class="shift-list" id="shiftList"></div>
-          </article>
-
-          <aside class="side-stack">
-            <article class="panel">
-              <p class="label">Dati</p>
-              <h2>Archivio</h2>
-              <div class="form-stack">
-                <button class="secondary-button full-width" id="exportBackup" type="button">Backup dati</button>
-                <button class="secondary-button full-width" id="importBackup" type="button">Ripristina dati</button>
-                <input id="backupFile" type="file" accept="application/json,.json" hidden>
-                <p class="hint" id="storageHint">Archivio locale pronto.</p>
-              </div>
-            </article>
-
-            <article class="panel">
-              <p class="label">Correzione rapida</p>
-              <h2>Aggiungi turno</h2>
-              <form id="manualForm" class="form-stack">
-                <label class="field">
-                  <span>Data</span>
-                  <input id="manualDate" type="date" required>
-                </label>
-                <div class="two-columns">
-                  <label class="field">
-                    <span>Inizio</span>
-                    <input id="manualStart" type="time" required>
-                  </label>
-                  <label class="field">
-                    <span>Fine</span>
-                    <input id="manualEnd" type="time" required>
-                  </label>
-                </div>
-                <label class="field">
-                  <span>Nota</span>
-                  <input id="manualNote" type="text" placeholder="Motivo o mansione">
-                </label>
-                <button class="secondary-button full-width" type="submit">Aggiungi turno</button>
-              </form>
-            </article>
-          </aside>
-        </section>
+        </article>
       </section>
 
       <nav class="bottom-nav" aria-label="Navigazione app">
         <a href="#home" data-view-link="home">Turno</a>
+        <a href="#report" data-view-link="report">Report</a>
         <a href="#settings" data-view-link="settings">Impostazioni</a>
       </nav>
     </main>

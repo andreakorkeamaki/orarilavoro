@@ -13,8 +13,6 @@ const defaultState = {
 
 const elements = {
   workStatus: document.querySelector("#workStatus"),
-  topWorkStatus: document.querySelector("#topWorkStatus"),
-  todayLabel: document.querySelector("#todayLabel"),
   activeTitle: document.querySelector("#activeTitle"),
   liveClock: document.querySelector("#liveClock"),
   shiftNote: document.querySelector("#shiftNote"),
@@ -167,9 +165,7 @@ function renderActiveShift() {
 
   if (!active) {
     elements.workStatus.textContent = "Fuori servizio";
-    elements.topWorkStatus.textContent = "Fuori servizio";
     elements.workStatus.classList.remove("active");
-    elements.topWorkStatus.classList.remove("active");
     elements.activeTitle.textContent = "Pronta a iniziare";
     elements.liveClock.textContent = "00:00:00";
     elements.clockInButton.disabled = false;
@@ -181,9 +177,7 @@ function renderActiveShift() {
   const startedAt = new Date(active.start);
   const elapsed = Date.now() - startedAt.getTime();
   elements.workStatus.textContent = "Al lavoro";
-  elements.topWorkStatus.textContent = "Al lavoro";
   elements.workStatus.classList.add("active");
-  elements.topWorkStatus.classList.add("active");
   elements.activeTitle.textContent = `Iniziato alle ${formatTime(startedAt)}`;
   elements.liveClock.textContent = formatTimer(elapsed);
   elements.clockInButton.disabled = true;
@@ -241,7 +235,6 @@ function renderShiftList(shifts) {
 }
 
 function render() {
-  elements.todayLabel.textContent = formatDate(new Date());
   renderActiveShift();
   renderSettings();
   renderMonth();
@@ -250,11 +243,15 @@ function render() {
 
 function currentViewFromHash() {
   const view = window.location.hash.replace("#", "");
-  return view === "settings" ? "settings" : DEFAULT_VIEW;
+  if (view === "report" || view === "settings") {
+    return view;
+  }
+
+  return DEFAULT_VIEW;
 }
 
 function setView(viewName) {
-  const normalizedView = viewName === "settings" ? "settings" : DEFAULT_VIEW;
+  const normalizedView = ["home", "report", "settings"].includes(viewName) ? viewName : DEFAULT_VIEW;
 
   for (const view of elements.views) {
     view.classList.toggle("active", view.dataset.view === normalizedView);
@@ -269,6 +266,8 @@ function setView(viewName) {
       link.removeAttribute("aria-current");
     }
   }
+
+  window.scrollTo(0, 0);
 }
 
 function clockIn() {
