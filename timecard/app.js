@@ -1,4 +1,5 @@
 const STORAGE_KEY = "lessa-timecard-v1";
+const DEFAULT_VIEW = "home";
 
 const defaultState = {
   settings: {
@@ -43,6 +44,8 @@ const elements = {
   backupFile: document.querySelector("#backupFile"),
   storageHint: document.querySelector("#storageHint"),
   shiftTemplate: document.querySelector("#shiftTemplate"),
+  views: document.querySelectorAll("[data-view]"),
+  viewLinks: document.querySelectorAll("[data-view-link]"),
 };
 
 let state = loadState();
@@ -245,6 +248,29 @@ function render() {
   updateStorageHint();
 }
 
+function currentViewFromHash() {
+  const view = window.location.hash.replace("#", "");
+  return view === "settings" ? "settings" : DEFAULT_VIEW;
+}
+
+function setView(viewName) {
+  const normalizedView = viewName === "settings" ? "settings" : DEFAULT_VIEW;
+
+  for (const view of elements.views) {
+    view.classList.toggle("active", view.dataset.view === normalizedView);
+  }
+
+  for (const link of elements.viewLinks) {
+    const isActive = link.dataset.viewLink === normalizedView;
+    link.classList.toggle("active", isActive);
+    if (isActive) {
+      link.setAttribute("aria-current", "page");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  }
+}
+
 function clockIn() {
   const now = new Date();
   state.activeShift = {
@@ -374,14 +400,14 @@ function exportCsv() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `ore-lessa-${getMonthKey(selectedMonth)}.csv`;
+  link.download = `conta-palle-${getMonthKey(selectedMonth)}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
 
 function exportBackup() {
   const backup = {
-    app: "ore-di-lessa",
+    app: "conta-palle",
     version: 1,
     exportedAt: new Date().toISOString(),
     data: state,
@@ -390,7 +416,7 @@ function exportBackup() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `ore-lessa-backup-${toDateInputValue(new Date())}.json`;
+  link.download = `conta-palle-backup-${toDateInputValue(new Date())}.json`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -479,6 +505,7 @@ elements.backupFile.addEventListener("change", () => {
     importBackupFile(file);
   }
 });
+window.addEventListener("hashchange", () => setView(currentViewFromHash()));
 elements.settingsForm.addEventListener("submit", saveSettings);
 elements.manualForm.addEventListener("submit", addManualShift);
 elements.shiftNote.addEventListener("input", () => {
@@ -491,6 +518,7 @@ elements.shiftNote.addEventListener("input", () => {
 });
 
 elements.manualDate.value = toDateInputValue(new Date());
+setView(currentViewFromHash());
 render();
 setInterval(renderActiveShift, 1000);
 

@@ -1,7 +1,7 @@
 {
-  "name": "Ore di Lessa",
-  "short_name": "Ore Lessa",
-  "description": "Registro turni e stipendio mensile per Ore di Lessa.",
+  "name": "CONTA PALLE",
+  "short_name": "CONTA PALLE",
+  "description": "Registro turni e stipendio mensile.",
   "lang": "it",
   "start_url": "./",
   "scope": "./",

@@ -6,10 +6,10 @@
     <meta name="theme-color" content="#101014">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Ore Lessa">
-    <meta name="application-name" content="Ore di Lessa">
-    <meta name="description" content="Registro turni e stipendio mensile per Ore di Lessa.">
-    <title>Ore di Lessa</title>
+    <meta name="apple-mobile-web-app-title" content="CONTA PALLE">
+    <meta name="application-name" content="CONTA PALLE">
+    <meta name="description" content="Registro turni e stipendio mensile.">
+    <title>CONTA PALLE</title>
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <link rel="icon" href="./icons/icon-192.png" sizes="192x192">
@@ -18,93 +18,88 @@
   <body>
     <main class="app-shell">
       <header class="app-topbar">
-        <a class="brand-lockup" href="#turno" aria-label="Ore di Lessa">
-          <span class="brand-mark">OL</span>
+        <a class="brand-lockup" href="#home" data-view-link="home" aria-label="CONTA PALLE">
+          <span class="brand-mark">CP</span>
           <span>
-            <strong>Ore di Lessa</strong>
+            <strong>CONTA PALLE</strong>
             <small id="todayLabel">Oggi</small>
           </span>
         </a>
-        <div class="status-pill compact-status" id="topWorkStatus">Fuori servizio</div>
+        <a class="topbar-action" href="#settings" data-view-link="settings">Impostazioni</a>
       </header>
 
-      <section class="hero" id="turno">
-        <div>
-          <p class="eyebrow">Registro turni</p>
-          <h1>Ore di Lessa</h1>
-          <p class="subtitle">Timbra entrata e uscita, controlla il mese e stima lo stipendio atteso.</p>
-        </div>
-        <div class="status-pill" id="workStatus">Fuori servizio</div>
-      </section>
+      <section class="view home-view active" id="home" data-view="home">
+        <section class="hero punch-hero">
+          <div>
+            <p class="eyebrow">Turno</p>
+            <h1>CONTA PALLE</h1>
+          </div>
+          <div class="status-pill" id="workStatus">Fuori servizio</div>
+        </section>
 
-      <section class="dashboard-grid">
         <article class="panel punch-panel">
-          <div class="panel-header">
-            <div>
-              <p class="label">Turno attuale</p>
-              <h2 id="activeTitle">Pronta a iniziare</h2>
-            </div>
+          <div class="punch-status">
+            <p class="label">Adesso</p>
+            <h2 id="activeTitle">Pronta a iniziare</h2>
             <span class="live-clock" id="liveClock">00:00:00</span>
           </div>
 
-          <label class="field">
+          <div class="button-row punch-actions">
+            <button class="primary-button punch-button" id="clockInButton" type="button">INIZIO LAVORO</button>
+            <button class="secondary-button punch-button" id="clockOutButton" type="button" disabled>FINE LAVORO</button>
+          </div>
+
+          <label class="field quiet-field">
             <span>Nota turno</span>
             <input id="shiftNote" type="text" placeholder="Sala, cucina, extra, evento...">
           </label>
 
-          <div class="button-row">
-            <button class="primary-button" id="clockInButton" type="button">Inizia lavoro</button>
-            <button class="secondary-button" id="clockOutButton" type="button" disabled>Finisci lavoro</button>
-          </div>
-
           <p class="hint" id="activeHint">La timbrata resta salvata anche se chiudi la pagina.</p>
-        </article>
-
-        <article class="panel totals-panel" id="report">
-          <div class="month-controls">
-            <button class="icon-button" id="previousMonth" type="button" aria-label="Mese precedente">&lt;</button>
-            <div>
-              <p class="label">Report mese</p>
-              <h2 id="monthLabel">-</h2>
-            </div>
-            <button class="icon-button" id="nextMonth" type="button" aria-label="Mese successivo">&gt;</button>
-          </div>
-
-          <div class="stat-grid">
-            <div class="stat">
-              <span>Ore</span>
-              <strong id="monthHours">0h 00m</strong>
-            </div>
-            <div class="stat">
-              <span>Stipendio</span>
-              <strong id="monthPay">EUR 0,00</strong>
-            </div>
-            <div class="stat">
-              <span>Turni</span>
-              <strong id="monthShifts">0</strong>
-            </div>
-            <div class="stat">
-              <span>Media turno</span>
-              <strong id="averageShift">0h 00m</strong>
-            </div>
-          </div>
-
-          <button class="secondary-button full-width" id="exportCsv" type="button">Esporta CSV del mese</button>
         </article>
       </section>
 
-      <section class="content-grid">
-        <article class="panel" id="storico">
-          <div class="panel-header compact">
-            <div>
-              <p class="label">Turni registrati</p>
-              <h2>Dettaglio mese</h2>
-            </div>
+      <section class="view settings-view" id="settings" data-view="settings">
+        <section class="settings-heading">
+          <div>
+            <p class="eyebrow">Gestione</p>
+            <h1>IMPOSTAZIONI</h1>
           </div>
-          <div class="shift-list" id="shiftList"></div>
-        </article>
+          <div class="status-pill compact-status" id="topWorkStatus">Fuori servizio</div>
+        </section>
 
-        <aside class="side-stack">
+        <section class="dashboard-grid">
+          <article class="panel totals-panel" id="report">
+            <div class="month-controls">
+              <button class="icon-button" id="previousMonth" type="button" aria-label="Mese precedente">&lt;</button>
+              <div>
+                <p class="label">Report mese</p>
+                <h2 id="monthLabel">-</h2>
+              </div>
+              <button class="icon-button" id="nextMonth" type="button" aria-label="Mese successivo">&gt;</button>
+            </div>
+
+            <div class="stat-grid">
+              <div class="stat">
+                <span>Ore</span>
+                <strong id="monthHours">0h 00m</strong>
+              </div>
+              <div class="stat">
+                <span>Stipendio</span>
+                <strong id="monthPay">EUR 0,00</strong>
+              </div>
+              <div class="stat">
+                <span>Turni</span>
+                <strong id="monthShifts">0</strong>
+              </div>
+              <div class="stat">
+                <span>Media turno</span>
+                <strong id="averageShift">0h 00m</strong>
+              </div>
+            </div>
+
+            <button class="secondary-button full-width" id="exportCsv" type="button">Esporta CSV del mese</button>
+          </article>
+
           <article class="panel" id="impostazioni">
             <p class="label">Impostazioni</p>
             <h2>Paga e profilo</h2>
@@ -129,51 +124,63 @@
               <button class="primary-button full-width" type="submit">Salva impostazioni</button>
             </form>
           </article>
+        </section>
 
-          <article class="panel">
-            <p class="label">Dati</p>
-            <h2>Archivio</h2>
-            <div class="form-stack">
-              <button class="secondary-button full-width" id="exportBackup" type="button">Backup dati</button>
-              <button class="secondary-button full-width" id="importBackup" type="button">Ripristina dati</button>
-              <input id="backupFile" type="file" accept="application/json,.json" hidden>
-              <p class="hint" id="storageHint">Archivio locale pronto.</p>
-            </div>
-          </article>
-
-          <article class="panel">
-            <p class="label">Correzione rapida</p>
-            <h2>Aggiungi turno</h2>
-            <form id="manualForm" class="form-stack">
-              <label class="field">
-                <span>Data</span>
-                <input id="manualDate" type="date" required>
-              </label>
-              <div class="two-columns">
-                <label class="field">
-                  <span>Inizio</span>
-                  <input id="manualStart" type="time" required>
-                </label>
-                <label class="field">
-                  <span>Fine</span>
-                  <input id="manualEnd" type="time" required>
-                </label>
+        <section class="content-grid">
+          <article class="panel" id="storico">
+            <div class="panel-header compact">
+              <div>
+                <p class="label">Turni registrati</p>
+                <h2>Dettaglio mese</h2>
               </div>
-              <label class="field">
-                <span>Nota</span>
-                <input id="manualNote" type="text" placeholder="Motivo o mansione">
-              </label>
-              <button class="secondary-button full-width" type="submit">Aggiungi turno</button>
-            </form>
+            </div>
+            <div class="shift-list" id="shiftList"></div>
           </article>
-        </aside>
+
+          <aside class="side-stack">
+            <article class="panel">
+              <p class="label">Dati</p>
+              <h2>Archivio</h2>
+              <div class="form-stack">
+                <button class="secondary-button full-width" id="exportBackup" type="button">Backup dati</button>
+                <button class="secondary-button full-width" id="importBackup" type="button">Ripristina dati</button>
+                <input id="backupFile" type="file" accept="application/json,.json" hidden>
+                <p class="hint" id="storageHint">Archivio locale pronto.</p>
+              </div>
+            </article>
+
+            <article class="panel">
+              <p class="label">Correzione rapida</p>
+              <h2>Aggiungi turno</h2>
+              <form id="manualForm" class="form-stack">
+                <label class="field">
+                  <span>Data</span>
+                  <input id="manualDate" type="date" required>
+                </label>
+                <div class="two-columns">
+                  <label class="field">
+                    <span>Inizio</span>
+                    <input id="manualStart" type="time" required>
+                  </label>
+                  <label class="field">
+                    <span>Fine</span>
+                    <input id="manualEnd" type="time" required>
+                  </label>
+                </div>
+                <label class="field">
+                  <span>Nota</span>
+                  <input id="manualNote" type="text" placeholder="Motivo o mansione">
+                </label>
+                <button class="secondary-button full-width" type="submit">Aggiungi turno</button>
+              </form>
+            </article>
+          </aside>
+        </section>
       </section>
 
       <nav class="bottom-nav" aria-label="Navigazione app">
-        <a href="#turno">Turno</a>
-        <a href="#report">Report</a>
-        <a href="#storico">Storico</a>
-        <a href="#impostazioni">Paga</a>
+        <a href="#home" data-view-link="home">Turno</a>
+        <a href="#settings" data-view-link="settings">Impostazioni</a>
       </nav>
     </main>
 
